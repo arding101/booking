@@ -9,6 +9,14 @@ module BookingApi
       @http_service
     end
 
+    def hotel(hotel_ids: [], request_parameters: {})
+      raise ArgumentError if hotel_ids.empty?
+      default_parameters = {
+        hotel_ids: hotel_ids.join(",")
+      }
+      response = http_service.request_get("/json/hotels", default_parameters.merge(request_parameters))
+    end
+
     # checks for the given parameters if the hotel is available
     def get_hotel_availabillity(request_parameters: {}, request_options: {})
       default_parameters = {
