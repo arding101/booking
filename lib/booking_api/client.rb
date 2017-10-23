@@ -54,7 +54,15 @@ module BookingApi
 end
 
 
-# __END__
+__END__
+
+
+params = {
+   hotel_ids: [303762]
+ }
+
+response = BookingApi::Client.new.hotels(request_parameters: params)
+
 #
 # params = {
 #   checkin: Time.now.strftime("%F"),

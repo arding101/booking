@@ -1,5 +1,8 @@
 module BookingApi
   class HttpService
+
+    ENDPOINT = 'https://distribution-xml.booking.com/2.0'
+
     def initialize
       @auth_username = BookingApi.username
       @auth_password = BookingApi.password
@@ -17,7 +20,7 @@ module BookingApi
 
     def request_post(url, data, request_options = {})
       connection.post do |req|
-        req.url url
+        req.url ENDPOINT + url
         req.headers['Content-Type'] = 'application/json'
         req.body = data.to_json
         req.options.timeout = request_options[:timeout] if request_options[:timeout]
@@ -26,7 +29,7 @@ module BookingApi
 
     def request_get(url, data, request_options = {})
       connection.get do |req|
-        req.url url
+        req.url ENDPOINT + url
         req.headers['Content-Type'] = 'application/json'
         req.body = data.to_json
         req.options.timeout = request_options[:timeout] if request_options[:timeout]
