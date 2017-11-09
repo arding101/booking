@@ -9,90 +9,49 @@ module BookingApi
       @http_service
     end
 
-    def hotels(hotel_ids: [], request_parameters: {})
-      raise ArgumentError if hotel_ids.empty?
-      default_parameters = {
-        hotel_ids: hotel_ids.join(",")
-      }
-      http_service.request_get("/json/hotels", default_parameters.merge(request_parameters))
+    # Implementation of the hotels end point
+    def hotels(hotel_ids: [], city_ids: [], country_ids: [], region_ids: [], district_ids: [], chain_ids: [], request_parameters: {})
+      if hotel_ids.empty? &&
+          city_ids.empty? &&
+          country_ids.empty? &&
+          region_ids.empty? &&
+          district_ids.empty? &&
+          chain_ids.empty?
+      then
+        raise ArgumentError.new('You must supply one of the following parameters: hotel_ids: [], city_ids: [], country_ids: [], region_ids: [], district_ids: [], chain_ids: []')
+      end
+
+      default_parameters = {}
+      default_parameters[:hotel_ids] = hotel_ids.join(',') if hotel_ids.any?
+      default_parameters[:city_ids] = city_ids.join(',') if city_ids.any?
+      default_parameters[:country_ids] = country_ids.join(',') if country_ids.any?
+      default_parameters[:region_ids] = region_ids.join(',') if region_ids.any?
+      default_parameters[:district_ids] = district_ids.join(',') if district_ids.any?
+      default_parameters[:chain_ids] = chain_ids.join(',') if chain_ids.any?
+      default_parameters[:language] = 'en'
+      #request_parameters[:extras] = 'hotel_info'
+      http_service.request_get('/json/hotels', default_parameters.merge(request_parameters))
     end
 
-    # # checks for the given parameters if the hotel is available
-    # def get_hotel_availabillity(request_parameters: {}, request_options: {})
-    #   default_parameters = {
-    #     room1: "A,A",
-    #   }
-    #   http_service.request_post("/json/getHotelAvailabilityV2", default_parameters.merge(request_parameters), request_options)
-    # end
-    #
-    # # gets hotel photos for the given hotel ids
-    # def hotel_description_photos(hotel_ids: [], request_parameters: {})
-    #   raise ArgumentError if hotel_ids.empty?
-    #   default_parameters = {
-    #     hotel_ids: hotel_ids.join(",")
-    #   }
-    #   response = http_service.request_post("/json/bookings.getHotelDescriptionPhotos", default_parameters.merge(request_parameters))
-    #   Images::ResponseList.new(response)
-    # end
-    #
-    # # gets detailed descriptions for the given hotels
-    # def get_hotel_description_translations(request_parameters: {})
-    #   default_parameters = {}
-    #   http_service.request_post("/json/bookings.getHotelDescriptionTranslations", default_parameters.merge(request_parameters))
-    # end
-    #
-    # # gets an overview of the data for the given hotel ids.
-    # def get_hotel_overviews(hotel_ids: [], request_parameters: {})
-    #   default_parameters = {}
-    #   default_parameters[:hotel_ids] = hotel_ids.join(",") if hotel_ids.any?
-    #   http_service.request_post("/json/bookings.getHotels", default_parameters.merge(request_parameters))
-    # end
+    # Implementation of the cities end point
+    def cities(city_ids: [], country_ids: [], request_parameters: {})
+      raise ArgumentError if city_ids.empty? && country_ids.empty?
+      default_parameters = {}
+      default_parameters[:languages] = 'en'
+      default_parameters[:city_ids] = city_ids.join(',') if city_ids.any?
+      default_parameters[:countries] = country_ids.join(',') if country_ids.any?
+      http_service.request_get('/json/cities', default_parameters.merge(request_parameters))
+    end
+
+    # Implementation of the changed hotels end point
+    def changedHotels(last_change, request_parameters: {})
+      raise ArgumentError if last_change.nil?
+      default_parameters = {}
+      default_parameters[:last_change] = last_change.strftime('%Y-%m-%d %H:%M:%S')
+      http_service.request_get('/json/changedHotels', default_parameters.merge(request_parameters))
+    end
 
     private
 
   end
 end
-
-
-__END__
-
-
-params = {
-   hotel_ids: [303762]
- }
-
-response = BookingApi::Client.new.hotels(request_parameters: params)
-
-#
-# params = {
-#   checkin: Time.now.strftime("%F"),
-#   checkout: (Time.now + (60 * 60 * 24 * 7 * 2)).strftime("%F"),
-#   hotel_ids: [303762]
-# }
-# response = BookingApi::Client.new.get_hotel_availabillity(request_parameters: params)
-#
-# puts response.body
-# {
-#   "checkout": "2016-04-04",
-#   "hotels": [
-#     {
-#       "room_min_price": {
-#         "price": "750.00"
-#       },
-#       "hotel_id": "303762",
-#       "hotel_currency_code": "EUR"
-#     }
-#   ],
-#   "checkin": "2016-03-21",
-#   "guest_groups": [
-#     {
-#       "guests": 2,
-#       "children": [
-#
-#       ]
-#     }
-#   ],
-#   "hotel_ids": [
-#     "303762"
-#   ]
-# }
