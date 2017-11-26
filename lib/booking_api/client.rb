@@ -44,8 +44,7 @@ module BookingApi
     end
 
     # Implementation of the changed hotels end point
-    def changedHotels(last_change, request_parameters: {})
-      raise ArgumentError if last_change.nil?
+    def changedHotels(last_change:, request_parameters: {})
       default_parameters = {}
       default_parameters[:last_change] = last_change.strftime('%Y-%m-%d %H:%M:%S')
       http_service.request_get('/json/changedHotels', default_parameters.merge(request_parameters))
